@@ -4,6 +4,14 @@ branding:
   icon: 'box'
   color: 'purple'
 inputs:
+  deb-app:
+    description: "App to build for"
+    required: true
+    default: "app"
+  deb-app-name:
+    description: "App name to build for"
+    required: true
+    default: "App Name"
   build:
     description: "Platform to build for"
     required: false
@@ -166,6 +174,12 @@ runs:
       if: inputs.build == 'true' && runner.os  == 'Linux'
       working-directory: ${{ inputs.app-working-directory }}
       run: chmod +x build/bin/*
+      shell: bash
+    - name: Build Debian Package
+      if: inputs.build == 'true' && runner.os  == 'Linux'
+      run: |
+        cd scripts
+        sh build-linux-deb.sh "${{ github.ref_name }}" "${{inputs.deb-app}}" "${{inputs.deb-app-name}}"
       shell: bash
     # Package and Sign MacOS
     - name: Import Code-Signing Certificates for macOS
